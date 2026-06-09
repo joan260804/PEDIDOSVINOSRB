@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pedidos RB</title>
+
+<script>
+  // URL actualizada para el nuevo flujo síncrono
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1jd7V6v5ExnjVtCE1NjGZlj3zyL7Kdv-4lDHTsNO3sGu_2KlJNBrr7lS0oVzvRAX1aQ/exec";
+
+  async function submitOrder() {
+    const btn = document.getElementById("btn-finalizar");
+    
+    // NOTA: Asegúrate de que esta estructura de datos coincida con la que espera tu script 'saveOrder'
+    // Aquí es donde deberías recoger los datos reales de tu carrito antes de enviarlos.
+    const orderData = { 
+        orden_id: "ORD-" + Date.now(),
+        fecha: new Date().toLocaleString(),
+        nombre: "Nombre del Cliente", // Ajusta esto
+        email: "email@cliente.com",   // Ajusta esto
+        total: 0,                     // Ajusta esto
+        items: []                     // Ajusta esto
+    };
+    
+    btn.disabled = true;
+    btn.innerText = "Enviando pedido, por favor espera...";
+
+    try {
+      const response = await fetch(SCRIPT_URL + "?action=saveOrder&order=" + encodeURIComponent(JSON.stringify(orderData)));
+      const result = await response.json();
+      
+      if (result.ok) {
+        alert("¡Pedido realizado con éxito! Se han enviado los correos y actualizado los totales.");
+      } else {
+        alert("Error al guardar el pedido: " + result.error);
+      }
+    } catch (e) {
+      alert("Error de conexión. Por favor, intenta de nuevo.");
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Finalizar Pedido";
+    }
+  }
+</script>
+</head>
+<body>
+  <!-- Tu contenido HTML actual debe mantenerse aquí -->
+  <button id="btn-finalizar" onclick="submitOrder()">Finalizar Pedido</button>
+</body>
+</html>
